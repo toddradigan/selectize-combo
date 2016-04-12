@@ -1,0 +1,184 @@
+<script src='/bower_components/webcomponentsjs/webcomponents-lite.js'></script>
+
+<link rel='import' href='/bower_components/iron-a11y-keys/iron-a11y-keys.html'>
+<link rel='import' href='/bower_components/iron-ajax/iron-ajax.html'>
+<link rel='import' href='/bower_components/iron-dropdown/iron-dropdown.html'>
+<link rel='import' href='/bower_components/iron-input/iron-input.html'>
+<link rel='import' href='/bower_components/iron-list/iron-list.html'>
+
+<dom-module id='selectize-combo'>
+  <template>
+
+    <style>
+      :host {
+        width: 100%;
+        padding: 8px;
+        background-color: #FFFFFF;
+        border: 1px solid #DDDDDD;
+      }
+
+      .dropdown-content {
+        background-color: #FFFFFF;
+        max-height: 150px;
+        min-width: 100px;
+        margin: 0px;
+        padding: 0px;
+        border: 1px solid #DDDDDD;
+      }
+
+      .list-item {
+        display: block;
+        position: relative;
+      }
+
+      .item-container {
+        padding: 5px;
+      }
+
+      .item-container:not(:last-of-type) {
+        border-bottom: 1px solid #DDDDDD;
+      }
+
+      iron-list {
+        height: 100%;
+        width: 100%;
+      }
+
+      input {
+        border: none;
+      }
+    </style>
+
+    <iron-ajax
+      id='ajax'
+      url='[[url]]'
+      handle-as='json'
+      debounce-duration='300'
+      last-response='{{data}}'>
+    </iron-ajax>
+
+    <iron-a11y-keys
+      keys='down arrow'
+      on-keys-pressed='__down'>
+    </iron-a11y-keys>
+
+    <template is='dom-repeat' items='[[selected]]' as='item'>
+      <span on-tap='__removeSelected'>[[item]]</span>
+    </template>
+    <input id='input' is='iron-input' on-keydown='__backspace' bind-value='{{bindValue}}'>
+
+    <iron-dropdown
+      id='dropdown'
+      horizontal-offset='0'
+      vertical-offset='32'>
+      <div class='dropdown-content'>
+        <iron-list items='[[__filteredData]]' as='item'>
+          <template>
+            <div class='item-container' on-tap='__select'>
+              <span class='list-item' tabindex='0'>[[item]]</span>
+              <iron-a11y-keys
+                keys='space enter'
+                on-keys-pressed='__select'>
+              </iron-a11y-keys>
+            </div>
+          </template>
+        </iron-list>
+      </div>
+    </iron-dropdown>
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'selectize-combo',
+
+      properties: {
+        bindValue: {
+          type: String,
+          notify: true,
+          observer: '__bindValueChanged'
+        },
+        data: {
+          type: Array,
+          value: function() { return []; },
+          notify: true,
+          observer: '__dataChanged'
+        },
+        max: {
+          type: Number,
+          value: 0
+        },
+        selected: {
+          type: Array,
+          value: function() { return []; },
+          notify: true
+        },
+        url: {
+          type: String
+        },
+        __filteredData: {
+          type: Array,
+          computed: '__computeFilteredData(selected, data, __touch)'
+        },
+        __touch: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      __backspace: function(e, detail) {
+        if (e.keyCode === 8 && e.srcElement.selectionStart === 0) {
+          this.pop('selected');
+        }
+      },
+
+      __bindValueChanged: function(bindValue) {
+        this.$.dropdown.close();
+
+        if (bindValue !== '') {
+          this.__requestData();
+        }
+      },
+
+      __computeFilteredData: function(selected, data) {
+        return data.filter(function(item) {
+          return !selected.includes(item);
+        });
+      },
+
+      __dataChanged: function() {
+        if (this.data && this.data.length > 0) {
+          this.$.dropdown.open();
+        }
+      },
+
+      __down: function(e, detail) {
+        this.__requestData();
+      },
+
+      __removeSelected: function(e, detail) {
+        this.splice('selected', e.model.index, 1);
+      },
+
+      __requestData: function() {
+        this.$.ajax.params={x: this.bindValue};
+        this.debounce('request', function() {
+          this.$.ajax.generateRequest();
+        }, 300);
+      },
+
+      __select: function(e, detail) {
+        if (this.max <= 0 || (this.selected && this.selected.length < this.max)) {
+          this.push('selected', e.model.item);
+          this.__touch = !this.__touch;
+        } else if (this.max === 1) {
+          this.splice('selected', 0, 1, e.model.item);
+          this.__touch = !this.__touch;
+        }
+      }
+    });
+
+  </script>
+
+</dom-module>

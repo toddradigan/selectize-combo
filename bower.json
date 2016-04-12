@@ -1,0 +1,16 @@
+{
+  "name": "selectize-combo",
+  "description": "experimentation",
+  "version": "0.1.0",
+  "homepage": "",
+  "keywords": [],
+  "author": "Todd Radigan",
+  "dependencies": {
+    "iron-a11y-keys": "PolymerElements/iron-a11y-keys#^1.0",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.2",
+    "iron-dropdown": "PolymerElements/iron-dropdown#^1.3",
+    "iron-input": "PolymerElements/iron-input#^1.0",
+    "iron-list": "PolymerElements/iron-list#^1.2",
+    "polymer": "Polymer/polymer#1.3"
+  }
+}

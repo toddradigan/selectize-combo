@@ -1,0 +1,32 @@
+<!doctype html>
+
+<html>
+<head>
+  <title>Selectize Combo demo</title>
+
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+  <meta name='mobile-web-app-capable' content='yes'>
+  <meta name='apple-mobile-web-app-capable' content='yes'>
+
+  <script src='/bower_components/webcomponentsjs/webcomponents-lite.min.js'></script>
+
+  <link rel='import' href='selectize-combo.html'>
+
+  <style>
+    body {
+      margin: 0px;
+      height: 100vh;
+      background-color: #CCCCCC;
+    }
+    div#container {
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body unresolved class='fullbleed layout vertical'>
+  <div id='container'>
+    <selectize-combo url='/primes'></selectize-combo>
+  </div>
+</body>
+</html>
